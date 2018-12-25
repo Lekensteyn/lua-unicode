@@ -63,17 +63,15 @@ if(UNIX)
 endif()
 
 # Build executables.
-add_executable(lua_binary src/lua.c src/utf8_wmain.c
-  $<TARGET_OBJECTS:lua_objects>)
+add_executable(lua_binary src/lua.c src/utf8_wmain.c)
 set_target_properties(lua_binary PROPERTIES
   PDB_NAME lua${OUTPUT_NAME_SUFFIX}.exe
   OUTPUT_NAME lua${OUTPUT_NAME_SUFFIX})
-if(UNIX)
-  target_link_libraries(lua_binary m ${CMAKE_DL_LIBS})
-endif()
 if(APPLE OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_link_libraries(lua_binary readline)
 endif()
+# Link dynamically to ensure a shared VM when loading C libraries.
+target_link_libraries(lua_binary lua_shared)
 
 add_executable(luac_binary src/luac.c src/utf8_wmain.c
   $<TARGET_OBJECTS:lua_objects>)
@@ -87,7 +85,7 @@ if(WIN32 AND MSVC)
   # LUA_BUILD_AS_DLL results in LNK4217 warnings while linking the executables
   # since these statically link with objects that export symbols which are
   # locally used by the executables. Ignore to avoid recompiling.
-  set_target_properties(lua_binary luac_binary PROPERTIES
+  set_target_properties(luac_binary PROPERTIES
     LINK_FLAGS "/ignore:4217")
 endif()
 
