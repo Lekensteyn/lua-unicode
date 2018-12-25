@@ -26,7 +26,7 @@ endforeach()
 # Extra sources.
 list(APPEND LUA_SOURCES src/utf8_wrappers.c)
 
-add_definitions(-DUA_COMPAT_ALL)
+add_definitions(-DLUA_COMPAT_ALL)
 if(WIN32)
   add_definitions(-DLUA_BUILD_AS_DLL
     -DWIN32_LEAN_AND_MEAN -D_CRT_SECURE_NO_DEPRECATE)
