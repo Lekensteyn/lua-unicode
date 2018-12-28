@@ -34,6 +34,9 @@ It deliberately does not add newer API interfaces (which would be better suited
 for an external library) nor change data types. The resulting binaries are ABI
 compatible with those distributed by the LuaBinaries project.
 
+Prebuilt binaries and source zips are available in the releases section of
+https://github.com/Lekensteyn/lua-unicode (issues can also be reported here).
+
 ## Changes
 This project modifies the Lua core in a minimal way and is ABI compatible with
 the standard Lua library.
