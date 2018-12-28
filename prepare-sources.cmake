@@ -1,4 +1,4 @@
-# Downloads, verifies and unpacks a patched source tree into ${TARBALL_DIR}.
+# Downloads, verifies and unpacks a patched source tree into ${OUTPUT_DIR}.
 # (A subdirectory will be created for the sources.)
 
 cmake_minimum_required(VERSION 3.5)
@@ -7,14 +7,14 @@ set(PROJECT_VERSION 5.2.4)
 set(URL https://www.lua.org/ftp/lua-${PROJECT_VERSION}.tar.gz)
 set(SHA256 b9e2e4aad6789b3b63a056d442f7b39f0ecfca3ae0f1fc0ae4e9614401b69f4b)
 
-# Destination settings.
-if(NOT TARBALL_DIR)
-  # Directory to store the source tarball and create the source directory.
-  set(TARBALL_DIR .)
+# Directory to store the source tarball and create the source directory.
+if(NOT OUTPUT_DIR)
+  set(OUTPUT_DIR .)
 endif()
+get_filename_component(OUTPUT_DIR "${OUTPUT_DIR}" ABSOLUTE)
 
 # Retrieve tarball if missing
-get_filename_component(TARBALL ${TARBALL_DIR}/lua-${PROJECT_VERSION}.tar.gz ABSOLUTE)
+get_filename_component(TARBALL ${OUTPUT_DIR}/lua-${PROJECT_VERSION}.tar.gz ABSOLUTE)
 if(NOT EXISTS ${TARBALL})
   message(STATUS "Downloading ${URL}")
   file(DOWNLOAD ${URL} ${TARBALL} EXPECTED_HASH SHA256=${SHA256})
@@ -28,12 +28,12 @@ else()
 endif()
 
 # Unpack sources.
-get_filename_component(LUA_SRCDIR ${TARBALL_DIR}/lua-${PROJECT_VERSION} ABSOLUTE)
+set(OUTPUT_NAME lua-${PROJECT_VERSION})
+set(LUA_SRCDIR ${OUTPUT_DIR}/${OUTPUT_NAME})
 if(NOT EXISTS ${LUA_SRCDIR})
-  get_filename_component(lua_srcdir_parent "${LUA_SRCDIR}" DIRECTORY)
   file(MAKE_DIRECTORY ${LUA_SRCDIR})
   execute_process(COMMAND "${CMAKE_COMMAND}" -E tar xzf "${TARBALL}"
-    WORKING_DIRECTORY "${lua_srcdir_parent}"
+    WORKING_DIRECTORY "${OUTPUT_DIR}"
     RESULT_VARIABLE unpack_result)
   if(NOT unpack_result EQUAL 0)
     message(FATAL_ERROR "Failed to unpack ${TARBALL}")
