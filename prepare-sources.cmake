@@ -40,14 +40,22 @@ if(NOT EXISTS ${LUA_SRCDIR})
   endif()
 endif()
 
+# Check for LUA_LIB as well as specific header names in case external projects
+# set the LUA_LIB macro.
+set(code [[
+#if defined(lua_c) || defined(luac_c) || (defined(LUA_LIB) && \
+    (defined(lauxlib_c) || defined(liolib_c) || \
+     defined(loadlib_c) || defined(loslib_c)))
+#include "utf8_wrappers.h"
+#endif
+]])
+
 # Patch the header to include our UTF-8 wrappers for Windows.
 file(READ "${LUA_SRCDIR}/src/luaconf.h" luaconf_h)
 if(NOT luaconf_h MATCHES ".*utf8_wrappers.h.*")
-  set(conditionals "defined(LUA_LIB) || defined(lua_c) || defined(luac_c)")
-  string(REGEX REPLACE
-    "(Local configuration\\.[^\n]+\n(\\*[^\n]+\n)+)"
-    "\\1#if ${conditionals}\n#include \"utf8_wrappers.h\"\n#endif\n"
-    patched_luaconf_h "${luaconf_h}")
+  string(REPLACE "\\" "\\\\" code_escaped "${code}")
+  string(REGEX REPLACE "(Local configuration\\.[^\n]+\n(\\*[^\n]+\n)+)"
+    "\\1${code_escaped}" patched_luaconf_h "${luaconf_h}")
   if(luaconf_h STREQUAL patched_luaconf_h)
     message(FATAL_ERROR "Failed to patch luaconf.h")
   endif()

@@ -49,7 +49,9 @@ The source tree is created using `cmake -P prepare-sources.cmake` which:
 4. Add `src/utf8_wmain.c` (affects executables only, not the DLL).
 5. Patch `src/luaconf.h` to add the following in the *Local configuration* part:
 
-       #if defined(LUA_LIB) || defined(lua_c) || defined(luac_c)
+       #if defined(lua_c) || defined(luac_c) || (defined(LUA_LIB) && \
+           (defined(lauxlib_c) || defined(liolib_c) || \
+            defined(loadlib_c) || defined(loslib_c)))
        #include "utf8_wrappers.h"
        #endif
 
