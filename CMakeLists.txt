@@ -114,7 +114,10 @@ if(WIN32)
   else()
     message(FATAL_ERROR "Unexpected generator platform")
   endif()
-  if(MSVC_TOOLSET_VERSION)
+  if(MSVC14)
+    # VS 2015 / VS 2017 (using VCRUNTIME140.dll).
+    set(name "${name}-vc14")
+  elseif(MSVC_TOOLSET_VERSION)  # Requires CMake 3.12
     math(EXPR msvc_major "${MSVC_TOOLSET_VERSION} / 10")
     set(name "${name}-vc${msvc_major}")
   endif()
