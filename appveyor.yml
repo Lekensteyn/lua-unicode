@@ -1,0 +1,24 @@
+version: build{build}
+image:
+  - Visual Studio 2017
+  - Visual Studio 2015
+
+before_build:
+  - ps: 'subst Z: $PWD'
+  - 'cd Z:'
+  - cmake -P prepare-sources.cmake
+  - ps: |
+
+      $version = (Select-String -Path prepare-sources.cmake -Pattern "set\(PROJECT_VERSION ([0-9.]+)").Matches[0].Groups[1].Value
+      $name = "lua-${version}"
+      cmake -E tar cf "${name}.zip" --format=zip "${name}"
+  - cd lua-*
+
+build_script:
+  - ps: '& .\build-all.ps1'
+  - ps: Move-Item *.zip ..
+
+artifacts:
+  - path: 'lua-*.zip'
+
+deploy: off
